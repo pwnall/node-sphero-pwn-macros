@@ -1,0 +1,41 @@
+{
+  "name": "sphero-pwn-macros",
+  "version": "0.0.0",
+  "description": "Macro compiler for Sphero robots",
+  "keywords": ["sphero", "macro", "compiler"],
+  "homepage": "https://github.com/pwnall/node-sphero-pwn-macros",
+  "author": "Victor Costan <victor@costan.us> (http://www.costan.us)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pwnall/node-sphero-pwn-macros.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pwnall/node-sphero-pwn-macros/issues"
+  },
+  "engines": {
+    "node": "5.x"
+  },
+  "dependencies": {
+    "coffee-script": ">= 1.10.0"
+  },
+  "devDependencies": {
+    "chai": ">= 3.4.1",
+    "codo": ">= 2.0.11",
+    "fs-promise": ">= 0.3.1",
+    "mocha": ">= 2.3.4",
+    "sinon": ">= 1.17.2",
+    "sinon-chai": ">= 2.8.0",
+    "sphero-pwn": ">= 0.3.2"
+  },
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "src": "src",
+    "test": "test"
+  },
+  "scripts": {
+    "start": "node lib/boot.js",
+    "test": "node node_modules/mocha/bin/mocha --compilers coffee:coffee-script/register --timeout 1000 --require test/helpers.coffee"
+  }
+}
