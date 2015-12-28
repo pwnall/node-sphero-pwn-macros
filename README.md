@@ -19,6 +19,16 @@ This project is written in [CoffeeScript](http://coffeescript.org/) and tested
 using [mocha](http://visionmedia.github.io/mocha/).
 
 
+## Usage
+
+```javascript
+macros = require('sphero-pwn-macros');
+macro = macros.compile("rgb 255, 128, 0");
+console.log(macro.bytes);
+// [ 0, 7, 255, 128, 0, 0 ]
+```
+
+
 ## Development Setup
 
 The basic compiler tests can run on any computer. The integration tests
