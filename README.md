@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/pwnall/node-sphero-pwn-macros.svg)](https://travis-ci.org/pwnall/node-sphero-pwn-macros)
 [![API Documentation](http://img.shields.io/badge/API-Documentation-ff69b4.svg)](http://coffeedoc.info/github/pwnall/node-sphero-pwn-macros)
-[![NPM Version](http://img.shields.io/npm/v/sphero-pwn.svg)](https://www.npmjs.org/package/sphero-pwn-macros)
+[![NPM Version](http://img.shields.io/npm/v/sphero-pwn-macros.svg)](https://www.npmjs.org/package/sphero-pwn-macros)
 
 This is a [node.js](http://nodejs.org/) compiler for the
 [command macros used by Sphero robots](http://sdk.sphero.com/robot-languages/macros/).
