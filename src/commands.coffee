@@ -126,6 +126,26 @@ MacroCommands =
     pcd: false
   }
 
+  # Goto
+  goto: {
+    byteCode: 0x0C
+    args: [{
+      name: 'macroId'
+      type: 'uint8', min: 0, max: 0xFF
+    }]
+    pcd: false
+  }
+
+  # Gosub
+  gosub: {
+    byteCode: 0x0D
+    args: [{
+      name: 'macroId'
+      type: 'uint8', min: 0, max: 0xFF
+    }]
+    pcd: false
+  }
+
   # Sleep
   sleep: {
     byteCode: 0x0E
@@ -218,6 +238,17 @@ MacroCommands =
   endrepeat: {
     byteCode: 0x1F
     args: []
+    pcd: false
+  }
+
+  # Goto
+  oncollision: {
+    byteCode: 0x0C
+    args: [{
+      name: 'macroId'
+      type: 'uint8', min: 0, max: 0xFF
+      builtins: { do_nothing: 0 }
+    }]
     pcd: false
   }
 

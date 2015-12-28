@@ -28,6 +28,97 @@ console.log(macro.bytes);
 // [ 0, 7, 255, 128, 0, 0 ]
 ```
 
+### Macro Language
+
+Comments follow the Ruby / CoffeeScript / Python convention. A comment starts
+with the character `#` and continues until the end of the line. There is no
+multi-line comment construct.
+
+```ruby
+# This is a comment.
+```
+
+Commands are currently lowercased. Each command must be specified on its own
+line. The command's arguments can be separated by spaces and optional commas.
+
+```ruby
+rgb 0 255 0    # Turn the RGB LED green.
+delay 2000     # Wait for 2 seconds.
+rgb 0, 0, 255  # Turn the RGB LED blue.
+delay 2000     # Wait for 2 more seconds.
+```
+
+The compiler implements a simple form of variable substitution. Variable names
+start with `$`, and variables are assigned values with `let`. Keep in mind that
+the Spero macro language does not support variables, so the substitution is
+done statically, at compilation time.
+
+```ruby
+let $red, 0
+let $green, 255
+let $blue, 0
+rgb $red, $green, $blue  # Turn the RGB LED gren.
+delay 2000               # Wait for 2 seconds.
+
+let $blue $green
+let $green $red
+rgb $red, $green, $blue  # Turn the RGB LED blue
+delay 2000               # Wait for 2 more seconds.
+```
+
+Macro flags can be set anywhere in the source code. However, a macro flag can
+be set at most once. The supported flags are listed [here](src/flags.coffee).
+
+```ruby
+flag $exclusiveDrive 1
+rgb 0 255 0    # Turn the RGB LED green.
+
+flag $markerOnEnd, 1
+```
+
+Some commands accept built-in constants, which are syntactic sugar for
+constants with special meaning. Built-ins start with `:`. The inventory of
+available built-ins depends on the context that they are used in.
+
+
+```ruby
+flag $markerOnEnd :on  # in the context of "flag", :on is 1, :off is 0
+sleep :forever         # in the context of "sleep", :forever is 0
+```
+
+### Implemented Commands
+
+The following table summarizes the
+[table used by code generation](src/commands.coffee).
+
+| Name           | Command                  | Arguments                                         |
+|----------------|--------------------------|---------------------------------------------------|
+| end            | End                      | none                                              |
+| endstream      | Stream End               | none                                              |
+| sysdelay       | Set SD1, SD2             | register (1 or 2), delay (0 - 65535)              |
+| stabilization  | Set Stabilization        | flag (:off is 0, :reset_on is 1, :on is 2)        |
+| heading        | Set Heading              | heading (0 - 359)                                 |
+| maxrotation    | Set Rotation Rate        | rate (0 - 255)                                    |
+| roll           | Roll                     | speed (0 - 255), heading (0 - 359)                |
+| rgb            | Set RGB LED              | red, green, blue (0 - 255)                        |
+| backled        | Set Back LED             | power (0 - 255)                                   |
+| motor          | Send Raw Motor Commands  | mode (0, 1, 2, 3, 4), power                       |
+|                |                          | for mode,  :off is 0, :forward is 1,              |
+|                |                          | :reverse is 2, :brake is 3, :ignore is 4          |
+| delay          | Delay                    | time (0 - 65535)                                  |
+| goto           | Goto                     | macroId (0 - 255)                                 |
+| gosub          | Gosub                    | macroId (0 - 255)                                 |
+| sleep          | Sleep                    | time (:forever is 0, :api is 65535)               |
+| sysspeed       | Set SPD1, SPD2           | register (1 or 2), speed (0 - 65535)              |
+| rgbfade        | Fade to LED Over Time    | red, green, blue (0 - 255), duration (0 - 65535)  |
+| marker         | Emit Marker              | value (0 - 255; 0 is not recommended)             |
+| waitforstop    | Wait Until Stopped       | timeout (0 -  65535)                              |
+| timedrotate    | Rotate Over Time         | angularSpeed (-32767 - 32767), time (0 - 65535)   |
+| repeat         | Loop Start               | count (0 - 255)                                   |
+| endrepeat      | Loop End                 | none                                              |
+| oncollision    | Branch On Collision      | macroId (0 - 255), :nothing is 0                  |
+| speed          | Set Speed                | speed (0 - 255)                                   |
+
 
 ## Development Setup
 
