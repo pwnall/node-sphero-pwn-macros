@@ -1,6 +1,6 @@
 {
   "name": "sphero-pwn-macros",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Macro compiler for Sphero robots",
   "keywords": ["sphero", "macro", "compiler"],
   "homepage": "https://github.com/pwnall/node-sphero-pwn-macros",
