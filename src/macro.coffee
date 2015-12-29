@@ -138,8 +138,6 @@ class Macro
         @bytes.push bytes[2]
         bytes = []
 
-    # TODO(pwnall): roll+delay -> roll2 optimization
-
     @_lastCommand = commandData
     @_lastCommandOffset = @bytes.length
     unless bytes.length is 0
