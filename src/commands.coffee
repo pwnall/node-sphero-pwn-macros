@@ -266,6 +266,7 @@ MacroCommands =
     args: [{
       name: 'speed'
       type: 'uint8', min: 0, max: 0xFF
+      builtins: { brake: 0 }
     }]
     fusion: { pcd: true, pcd2: null }
   }

@@ -147,7 +147,7 @@ The following table summarizes the
 | repeat         | Loop Start               | count (0 - 255)                                   |
 | endrepeat      | Loop End                 | none                                              |
 | oncollision    | Branch On Collision      | macroId (0 - 255), :do_nothing is 0               |
-| speed          | Set Speed                | speed (0 - 255)                                   |
+| speed          | Set Speed                | speed (0 - 255), :brake is 0                      |
 
 
 ## Development Setup
