@@ -80,11 +80,41 @@ Some commands accept built-in constants, which are syntactic sugar for
 constants with special meaning. Built-ins start with `:`. The inventory of
 available built-ins depends on the context that they are used in.
 
-
 ```ruby
 flag $markerOnEnd :on  # in the context of "flag", :on is 1, :off is 0
 sleep :forever         # in the context of "sleep", :forever is 0
 ```
+
+### Optimizations
+
+The PCD argument to commands is not exposed. Instead,the compiler automatically
+turns `delay` commands into PCD arguments whenever it is possible to do so.
+Remembering which commands accept a PCD argument is a job for computers, not
+for humans.
+
+The following example compiles to a single command (Set RGB LED, bytecode 0x07)
+with a PCD argument.
+
+```ruby
+rgb 0, 255, 0
+delay 200       # This sets the PCD byte for the RGB command to 200.
+```
+
+In the example below, the delay argument is too big to fit into a PCD byte, so
+the compiler issues a separate delay command. Macro programmers should focus on
+specifying the desired behavior, and rely on the compiler to produce the best
+possible code.
+
+```ruby
+rgb 0, 0, 255
+delay 2000      # 2000 is too big for the PCD byte. A delay command is issued.
+```
+
+By the same token, the compiler does not expose a separate command that maps to
+the Roll2 bytecode. Instead, the compiler optimizes a `roll` command followed
+by a `delay` command into a Roll (bytecode 0x05) or Roll2 (bytecode 0x1D),
+depending on the `delay` argument.
+
 
 ### Implemented Commands
 
@@ -99,7 +129,7 @@ The following table summarizes the
 | stabilization  | Set Stabilization        | flag (:off is 0, :reset_on is 1, :on is 2)        |
 | heading        | Set Heading              | heading (0 - 359)                                 |
 | maxrotation    | Set Rotation Rate        | rate (0 - 255)                                    |
-| roll           | Roll                     | speed (0 - 255), heading (0 - 359)                |
+| roll           | Roll, Roll2              | speed (0 - 255), heading (0 - 359)                |
 | rgb            | Set RGB LED              | red, green, blue (0 - 255)                        |
 | backled        | Set Back LED             | power (0 - 255)                                   |
 | motor          | Send Raw Motor Commands  | mode (0, 1, 2, 3, 4), power                       |
@@ -116,14 +146,15 @@ The following table summarizes the
 | timedrotate    | Rotate Over Time         | angularSpeed (-32767 - 32767), time (0 - 65535)   |
 | repeat         | Loop Start               | count (0 - 255)                                   |
 | endrepeat      | Loop End                 | none                                              |
-| oncollision    | Branch On Collision      | macroId (0 - 255), :nothing is 0                  |
+| oncollision    | Branch On Collision      | macroId (0 - 255), :do_nothing is 0               |
 | speed          | Set Speed                | speed (0 - 255)                                   |
 
 
 ## Development Setup
 
-The basic compiler tests can run on any computer. The integration tests
-require a robot that can run
+The unit tests that cover most of the compiler infrastructure can run on any
+computer that has node.js installed. The integration tests that verify the
+[command table](src/commands.coffee)'s correctness require a robot that can run
 [orBasic](http://sdk.sphero.com/robot-languages/orbbasic/).
 
 At the time of this writing, the [BB-8](http://www.sphero.com/starwars) does

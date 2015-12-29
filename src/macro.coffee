@@ -17,7 +17,8 @@ class Macro
     @_env = environment
     @labels = {}
     @bytes = [0x00]
-    @_endsWithPcd = false
+    @_lastCommand = null
+    @_lastCommandOffset = null
     @_lastError = null
     @_opOffsets = []
 
@@ -121,19 +122,26 @@ class Macro
         else
           throw new Error("Unimplemented argument type #{commandArg.type}")
 
-    if commandData.pcd
+    if commandData.fusion.pcd
       bytes.push 0x00
 
     # We don't ask users to remember which commands have a PCD byte. Instead,
     # we automatically convert a PCD command followed by a delay command into
     # into one command with a non-zero PCD byte.
-    if @_endsWithPcd is true and bytes[0] is 0x0B and bytes[1] is 0
-      @bytes[@bytes.length - 1] = bytes[2]
-      bytes = []
+    if bytes[0] is 0x0B and @_lastCommand isnt null
+      if @_lastCommand.fusion.pcd is true and bytes[1] is 0
+        @bytes[@bytes.length - 1] = bytes[2]
+        bytes = []
+      else if @_lastCommand.fusion.pcd2 isnt null
+        @bytes[@_lastCommandOffset] = @_lastCommand.fusion.pcd2.byteCode
+        @bytes[@bytes.length - 1] = bytes[1]
+        @bytes.push bytes[2]
+        bytes = []
 
     # TODO(pwnall): roll+delay -> roll2 optimization
 
-    @_endsWithPcd = commandData.pcd
+    @_lastCommand = commandData
+    @_lastCommandOffset = @bytes.length
     unless bytes.length is 0
       @_opOffsets.push @bytes.length
       @bytes.push byte for byte in bytes

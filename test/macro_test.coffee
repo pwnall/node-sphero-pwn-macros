@@ -1,3 +1,4 @@
+Commands = SpheroPwnMacros.Commands
 Environment = SpheroPwnMacros.Environment
 Lexer = SpheroPwnMacros.Lexer
 Macro = SpheroPwnMacros.Macro
@@ -12,7 +13,7 @@ describe 'Macro', ->
       expect(macro.lastError()).to.equal null
       expect(macro.bytes).to.deep.equal [0x00]
       expect(macro.labels).to.deep.equal {}
-      expect(macro._endsWithPcd).to.equal false
+      expect(macro._lastCommand).to.equal null
 
   describe '#addCommand', ->
     beforeEach ->
@@ -26,7 +27,7 @@ describe 'Macro', ->
       expect(@macro.lastError()).to.equal null
       expect(success).to.equal true
       expect(@macro.bytes).to.deep.equal [0x00, 0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal Commands.end
 
     it 'rejects invalid opcode', ->
       opcode = new Token 'opcode', 'nosuchop', 42
@@ -36,7 +37,7 @@ describe 'Macro', ->
           'Line 42: invalid command opcode nosuchop')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'rejects extra arguments to end', ->
       opcode = new Token 'opcode', 'end', 42
@@ -46,6 +47,7 @@ describe 'Macro', ->
           'Line 42: end takes 0 arguments, got 1 arguments')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
+      expect(@macro._lastCommand).to.equal null
 
     it 'adds stabilization with value correctly', ->
       opcode = new Token 'opcode', 'stabilization', 42
@@ -54,7 +56,7 @@ describe 'Macro', ->
       expect(@macro.lastError()).to.equal null
       expect(success).to.equal true
       expect(@macro.bytes).to.deep.equal [0x00, 0x03, 0x02, 0x00]
-      expect(@macro._endsWithPcd).to.equal true
+      expect(@macro._lastCommand).to.equal Commands.stabilization
 
     it 'adds stabilization with builtin correctly', ->
       opcode = new Token 'opcode', 'stabilization', 42
@@ -63,7 +65,7 @@ describe 'Macro', ->
       expect(@macro.lastError()).to.equal null
       expect(success).to.equal true
       expect(@macro.bytes).to.deep.equal [0x00, 0x03, 0x01, 0x00]
-      expect(@macro._endsWithPcd).to.equal true
+      expect(@macro._lastCommand).to.equal Commands.stabilization
 
     it 'adds stabilization with variable correctly', ->
       name = new Token 'var', '$stabilization', 40
@@ -77,7 +79,7 @@ describe 'Macro', ->
       expect(@macro.lastError()).to.equal null
       expect(success).to.equal true
       expect(@macro.bytes).to.deep.equal [0x00, 0x03, 0x01, 0x00]
-      expect(@macro._endsWithPcd).to.equal true
+      expect(@macro._lastCommand).to.equal Commands.stabilization
 
     it 'rejects undefined variable name', ->
       opcode = new Token 'opcode', 'stabilization', 42
@@ -87,7 +89,7 @@ describe 'Macro', ->
           'Line 42: undefined variable $stabilization')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'rejects label argument to stabilization', ->
       opcode = new Token 'opcode', 'stabilization', 42
@@ -97,7 +99,7 @@ describe 'Macro', ->
           'Line 42: stabilization flag does not accept type label')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'rejects invalid builtin argument to stabilization', ->
       opcode = new Token 'opcode', 'stabilization', 42
@@ -107,7 +109,7 @@ describe 'Macro', ->
           'Line 42: stabilization flag does not accept value :invalid')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'rejects underflow value argument to stabilization', ->
       opcode = new Token 'opcode', 'stabilization', 42
@@ -117,7 +119,7 @@ describe 'Macro', ->
           'Line 42: stabilization flag value -1 below minimum 0')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'rejects overflow value argument to stabilization', ->
       opcode = new Token 'opcode', 'stabilization', 42
@@ -127,7 +129,7 @@ describe 'Macro', ->
           'Line 42: stabilization flag value 16 above maximum 2')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'rejects invalid builtin via variable argument to stabilization', ->
       name = new Token 'var', '$stabilization', 40
@@ -142,7 +144,7 @@ describe 'Macro', ->
           'Line 42: stabilization flag does not accept value :invalid')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'rejects underflow value via variable argument to stabilization', ->
       name = new Token 'var', '$stabilization', 40
@@ -157,7 +159,7 @@ describe 'Macro', ->
           'Line 42: stabilization flag value -1 below minimum 0')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'rejects overflow value via variable argument to stabilization', ->
       name = new Token 'var', '$stabilization', 40
@@ -172,16 +174,16 @@ describe 'Macro', ->
           'Line 42: stabilization flag value 16 above maximum 2')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'adds roll with values correctly', ->
       opcode = new Token 'opcode', 'roll', 42
-      args = [new Token('number', '63', 42 ), new Token('number', '300', 42)]
+      args = [new Token('number', '63', 42), new Token('number', '300', 42)]
       success = @macro.addCommand opcode, args
       expect(@macro.lastError()).to.equal null
       expect(success).to.equal true
       expect(@macro.bytes).to.deep.equal [0x00, 0x05, 0x3F, 0x01, 0x2C, 0x00]
-      expect(@macro._endsWithPcd).to.equal true
+      expect(@macro._lastCommand).to.equal Commands.roll
 
     it 'rejects builtin argument to roll', ->
       opcode = new Token 'opcode', 'roll', 42
@@ -192,7 +194,7 @@ describe 'Macro', ->
           'Line 42: roll heading does not accept builtins')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'rejects builtin argument via variable to roll', ->
       name = new Token 'var', '$roll', 40
@@ -208,7 +210,7 @@ describe 'Macro', ->
           'Line 42: roll heading does not accept builtins')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'adds delay with value correctly', ->
       opcode = new Token 'opcode', 'delay', 42
@@ -216,33 +218,64 @@ describe 'Macro', ->
       success = @macro.addCommand opcode, args
       expect(@macro.lastError()).to.equal null
       expect(@macro.bytes).to.deep.equal [0x00, 0x0B, 0x04, 0xB0]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal Commands.delay
 
-    it 'folds short delay into stabilization PCD', ->
+    it 'fuses short delay with stabilization PCD', ->
       opcode = new Token 'opcode', 'stabilization', 42
       args = [new Token('number', '2', 42)]
       success = @macro.addCommand opcode, args
-      expect(@macro.lastError()).to.equal null
+      expect(success).to.equal true
+
       opcode = new Token 'opcode', 'delay', 43
       args = [new Token('number', '15', 43)]
       success = @macro.addCommand opcode, args
       expect(@macro.lastError()).to.equal null
+      expect(success).to.equal true
       expect(@macro.bytes).to.deep.equal [0x00, 0x03, 0x02, 0x0F]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal Commands.delay
 
     it 'expresses long delay as separate command', ->
       opcode = new Token 'opcode', 'stabilization', 42
       args = [new Token('number', '2', 42)]
       success = @macro.addCommand opcode, args
       expect(success).to.equal true
+
+      opcode = new Token 'opcode', 'delay', 43
+      args = [new Token('number', '256', 43)]
+      success = @macro.addCommand opcode, args
+      expect(@macro.lastError()).to.equal null
+      expect(success).to.equal true
+      expect(@macro.bytes).to.deep.equal(
+          [0x00, 0x03, 0x02, 0x00, 0x0B, 0x01, 0x00])
+      expect(@macro._lastCommand).to.equal Commands.delay
+
+    it 'fuses short delay with roll PCD', ->
+      opcode = new Token 'opcode', 'roll', 42
+      args = [new Token('number', '63', 42), new Token('number', '300', 42)]
+      success = @macro.addCommand opcode, args
+      expect(success).to.equal true
+
+      opcode = new Token 'opcode', 'delay', 43
+      args = [new Token('number', '15', 43)]
+      success = @macro.addCommand opcode, args
+      expect(@macro.lastError()).to.equal null
+      expect(@macro.bytes).to.deep.equal [0x00, 0x05, 0x3F, 0x01, 0x2C, 0x0F]
+      expect(@macro._lastCommand).to.equal Commands.delay
+
+    it 'fuses long delay as a roll2 command', ->
+      opcode = new Token 'opcode', 'roll', 42
+      args = [new Token('number', '63', 42), new Token('number', '300', 42)]
+      success = @macro.addCommand opcode, args
+      expect(success).to.equal true
+
       opcode = new Token 'opcode', 'delay', 43
       args = [new Token('number', '256', 43)]
       success = @macro.addCommand opcode, args
       expect(success).to.equal true
       expect(@macro.lastError()).to.equal null
       expect(@macro.bytes).to.deep.equal(
-          [0x00, 0x03, 0x02, 0x00, 0x0B, 0x01, 0x00])
-      expect(@macro._endsWithPcd).to.equal false
+          [0x00, 0x1D, 0x3F, 0x01, 0x2C, 0x01, 0x00])
+      expect(@macro._lastCommand).to.equal Commands.delay
 
     it 'adds sysspeed with register 1 correctly', ->
       opcode = new Token 'opcode', 'sysspeed', 42
@@ -251,7 +284,7 @@ describe 'Macro', ->
       expect(@macro.lastError()).to.equal null
       expect(success).to.equal true
       expect(@macro.bytes).to.deep.equal [0x00, 0x0F, 0x04, 0xB0]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal Commands.sysspeed
 
     it 'adds sysspeed with register 2 correctly', ->
       opcode = new Token 'opcode', 'sysspeed', 42
@@ -260,7 +293,7 @@ describe 'Macro', ->
       expect(@macro.lastError()).to.equal null
       expect(success).to.equal true
       expect(@macro.bytes).to.deep.equal [0x00, 0x10, 0x04, 0xB0]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal Commands.sysspeed
 
     it 'adds sysspeed with builtin :spd2 correctly', ->
       opcode = new Token 'opcode', 'sysspeed', 42
@@ -270,7 +303,7 @@ describe 'Macro', ->
       expect(@macro.lastError()).to.equal null
       expect(success).to.equal true
       expect(@macro.bytes).to.deep.equal [0x00, 0x10, 0x04, 0xB0]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal Commands.sysspeed
 
     it 'rejects sysspeed with invalid register correctly', ->
       opcode = new Token 'opcode', 'sysspeed', 42
@@ -280,7 +313,7 @@ describe 'Macro', ->
           'Line 42: sysspeed register does not accept value 5')
       expect(success).to.equal false
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'rejects sysspeed with invalid builtin correctly', ->
       opcode = new Token 'opcode', 'sysspeed', 42
@@ -290,7 +323,7 @@ describe 'Macro', ->
       expect(@macro.lastError()).to.equal(
           'Line 42: sysspeed register does not accept value :spd5')
       expect(@macro.bytes).to.deep.equal [0x00]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal null
 
     it 'adds timedrotate with positive angularSpeed correctly', ->
       opcode = new Token 'opcode', 'timedrotate', 42
@@ -298,7 +331,7 @@ describe 'Macro', ->
       success = @macro.addCommand opcode, args
       expect(@macro.lastError()).to.equal null
       expect(@macro.bytes).to.deep.equal [0x00, 0x1A, 0x02, 0xD0, 0x0F, 0xA0]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal Commands.timedrotate
 
     it 'adds timedrotate with negative angularSpeed correctly', ->
       opcode = new Token 'opcode', 'timedrotate', 42
@@ -306,7 +339,7 @@ describe 'Macro', ->
       success = @macro.addCommand opcode, args
       expect(@macro.lastError()).to.equal null
       expect(@macro.bytes).to.deep.equal [0x00, 0x1A, 0xFD, 0x30, 0x13, 0x88]
-      expect(@macro._endsWithPcd).to.equal false
+      expect(@macro._lastCommand).to.equal Commands.timedrotate
 
   describe '#consume', ->
     beforeEach ->

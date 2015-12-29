@@ -4,10 +4,18 @@
 # {Macro#addCommand}.
 MacroCommands =
   # End
-  end: { byteCode: 0x00, args: [], pcd: false }
+  end: {
+    byteCode: 0x00,
+    args: [],
+    fusion: { pcd: false, pcd2: null }
+  }
 
   # Stream End
-  endstream: { byteCode: 0x1B, args: [], pcd: false }
+  endstream: {
+    byteCode: 0x1B,
+    args: [],
+    fusion: { pcd: false, pcd2: null }
+  }
 
   # Set SD1, SD2
   sysdelay: {
@@ -21,7 +29,7 @@ MacroCommands =
       name: 'delay',
       type: 'uint16', min: 0, max: 0xFFFF
     }]
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Set Stabilization
@@ -32,7 +40,7 @@ MacroCommands =
       type: 'uint8', min: 0, max: 2
       builtins: { off: 0, reset_on: 1, on: 2 }
     }]
-    pcd: true
+    fusion: { pcd: true, pcd2: null }
   }
 
   # Set Heading
@@ -42,7 +50,7 @@ MacroCommands =
       name: 'heading'
       type: 'uint16', min: 0, max: 359
     }]
-    pcd: true
+    fusion: { pcd: true, pcd2: null }
   }
 
   # Set Rotation Rate
@@ -64,10 +72,10 @@ MacroCommands =
       name: 'heading'
       type: 'uint16', min: 0, max: 359
     }]
-    pcd: true
+    fusion:
+      pcd: true
+      pcd2: { byteCode: 0x1D }
   }
-
-  # Roll2 is implemented as an optimization over roll+delay
 
   # Set RGB LED
   rgb: {
@@ -82,7 +90,7 @@ MacroCommands =
       name: 'blue'
       type: 'uint8', min: 0, max: 0xFF
     }]
-    pcd: true
+    fusion: { pcd: true, pcd2: null }
   }
 
   # Set Back LED
@@ -92,7 +100,7 @@ MacroCommands =
       name: 'intensity'
       type: 'uint8', min: 0, max: 0xFF
     }]
-    pcd: true
+    fusion: { pcd: true, pcd2: null }
   }
 
   # Send Raw Motor Commands
@@ -113,7 +121,7 @@ MacroCommands =
       name: 'rightPower'
       type: 'uint8', min: 0, max: 255
     }]
-    pcd: true
+    fusion: { pcd: true, pcd2: null }
   }
 
   # Delay
@@ -123,7 +131,7 @@ MacroCommands =
       name: 'time'
       type: 'uint16', min: 0, max: 0xFFFF
     }]
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Goto
@@ -133,7 +141,7 @@ MacroCommands =
       name: 'macroId'
       type: 'uint8', min: 0, max: 0xFF
     }]
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Gosub
@@ -143,7 +151,7 @@ MacroCommands =
       name: 'macroId'
       type: 'uint8', min: 0, max: 0xFF
     }]
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Sleep
@@ -154,7 +162,7 @@ MacroCommands =
       type: 'uint16', min: 0, max: 0xFFFF
       builtins: { forever: 0, api: 0xFFFF }
     }]
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Set SPD1, SPD2
@@ -169,7 +177,7 @@ MacroCommands =
       name: 'speed'
       type: 'uint16', min: 0, max: 0xFFFF
     }]
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Fade to LED Over Time
@@ -188,7 +196,7 @@ MacroCommands =
       name: 'duration'
       type: 'uint16', min: 0, max: 0xFFFF
     }]
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Emit Marker
@@ -198,7 +206,7 @@ MacroCommands =
       name: 'value'
       type: 'uint8', min: 0, max: 0xFF
     }]
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Wait Until Stopped
@@ -208,7 +216,7 @@ MacroCommands =
       name: 'timeout',
       type: 'uint16', min: 0, max: 0xFFFF
     }]
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Rotate Over Time
@@ -221,7 +229,7 @@ MacroCommands =
       name: 'time'
       type: 'uint16', min: 0, max: 0xFFFF
     }]
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Loop Start
@@ -231,14 +239,14 @@ MacroCommands =
       name: 'count',
       type: 'uint8', min: 0, max: 0xFF
     }]
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Loop End
   endrepeat: {
     byteCode: 0x1F
     args: []
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Goto
@@ -249,7 +257,7 @@ MacroCommands =
       type: 'uint8', min: 0, max: 0xFF
       builtins: { do_nothing: 0 }
     }]
-    pcd: false
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Set Speed
@@ -259,7 +267,7 @@ MacroCommands =
       name: 'speed'
       type: 'uint8', min: 0, max: 0xFF
     }]
-    pcd: true
+    fusion: { pcd: true, pcd2: null }
   }
 
 
