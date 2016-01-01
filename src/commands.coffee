@@ -60,6 +60,7 @@ MacroCommands =
       name: 'rate'
       type: 'uint8', min: 0, max: 0xFF
     }]
+    fusion: { pcd: false, pcd2: null }
   }
 
   # Roll
